@@ -23,18 +23,18 @@ def avgDegree(infile, outfile):
                  r'\"': '"'
         }
         pat = re.compile(r"#(\w+)") # hashtag pattern
-        
+
         for line in f:
             line = json.loads(line)
             if 'text' in line and 'created_at' in line:
                 text = replace_all(line['text'], rdict) # replace escape characters
                 text = re.sub(r'\s+', ' ', text) # replace whitespace escape characters with a single space.
                 cleaned_text = re.sub(r'[^\x20-\x7F]+','', text) # remove non-ASCII unicode characters
-                tag = set(pat.findall(cleaned_text)) # hashtags found in the tweet
+                tag = set(pat.findall(cleaned_text)) # hashtags found in the tweets
                 t = datetime.strptime(line['created_at'], '%a %b %d %H:%M:%S +0000 %Y') # replace string to datetime format
-                q.append((tag, t)) # store hashtag and time into the queue
+                q.append((tag, t)) # store hashtags and time into the queue
 
-                # matain a queue with hashtag within 60 seconds
+                # matain a queue with hashtags within 60 seconds
                 while (q[-1][1]-q[0][1]).seconds > 60:
                     q.pop(0)
                 edge = set()
@@ -43,9 +43,10 @@ def avgDegree(infile, outfile):
                 # create a set of edge list 
                 for tag_60, t_60 in q:
                     if tag_60 > 1:
+                        # build edge list of Tweets with only one hashtag
                         edge.update(list(itertools.combinations(tag_60, 2)))
 
-                # caculate average defree
+                # caculate average degree
                 for x, y in edge:
                     c[x] += 1
                     c[y] += 1
